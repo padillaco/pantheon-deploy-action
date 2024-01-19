@@ -5,7 +5,6 @@ branding:
   icon: 'cloud-lightning'
   color: 'yellow'
 inputs:
-  # Upstream action-deploy-to-remote-repository inputs
   base_directory:
     description: 'Base directory for rsync'
     required: false

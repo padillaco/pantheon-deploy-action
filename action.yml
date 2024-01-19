@@ -28,13 +28,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Parse Branch Name (Base)
+    - name: Collect Branch Name Base
       shell: bash
       env:
         CURRENT_BRANCH: ${{ github.ref_name }}
       id: branch-name-base
       run: echo "name=$(echo CURRENT_BRANCH | cut -d '/' -f1)" >> $GITHUB_OUTPUT
-    - name: Parse Branch Name (Fragment)
+    - name: Collect Branch Name Fragment
       shell: bash
       env:
         CURRENT_BRANCH: ${{ github.ref_name }}

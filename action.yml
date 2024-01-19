@@ -27,28 +27,23 @@ inputs:
 
 runs:
   using: 'composite'
+  if: ${{ github.ref_name == 'develop' || startsWith(github.ref_name, 'multidev/') }}
   steps:
-    - name: Set Output Variable - Branch Name Base
+    - name: Set Output Variables - Multidev Branch Name
       shell: bash
-      id: branch-name-base
-      run: echo "name=$(echo ${github.ref_name} | cut -d '/' -f1)" >> $GITHUB_OUTPUT
-    - name: Set Output Variable - Branch Name Fragment
-      shell: bash
-      id: branch-name-fragment
+      id: multidev-branch-name
       run: echo "name=$(echo ${github.ref_name} | cut -d '/' -f2)" >> $GITHUB_OUTPUT
     - name: Install rsync
       run: sudo apt-get install -y rsync
       shell: bash
     - name: Deploy to Pantheon
-      if: ${{ github.ref_name == 'develop' || steps.branch-name-base.outputs.name == 'multidev' }}
       shell: bash
-      id: deploy-to-remote-repository
       env:
         BASE_DIRECTORY: ${{ inputs.base_directory }}
         DESTINATION_DIRECTORY: ${{ inputs.destination_directory }}
         EXCLUDE_LIST: ${{ inputs.exclude_list }}
         GIT_SSH_COMMAND: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/private_key
-        REMOTE_BRANCH: ${{ github.ref_name == 'develop' && 'master' || steps.branch-name-fragment.outputs.name }}
+        REMOTE_BRANCH: ${{ github.ref_name == 'develop' && 'master' || steps.multidev-branch-name.outputs.name }}
         REMOTE_REPO_DIR: /tmp/remote_repo
         REMOTE_REPO: 'ssh://codeserver.dev.${{ inputs.pantheon_site_id }}@codeserver.dev.${{ inputs.pantheon_site_id }}.drush.in:2222/~/repository.git'
         SSH_KEY: ${{ inputs.ssh_key }}

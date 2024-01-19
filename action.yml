@@ -27,7 +27,6 @@ inputs:
 
 runs:
   using: 'composite'
-  if: github.ref_name == 'develop' || startsWith(github.ref_name, 'multidev/')
   steps:
     - name: Set Output Variables - Multidev Branch Name
       shell: bash

@@ -32,7 +32,7 @@ runs:
       if: startsWith(github.ref_name, 'feature/multidev/')
       shell: bash
       id: multidev-branch-name
-      run: echo "name=$(echo ${github.ref_name} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
+      run: echo "name=$(echo ${GITHUB_HEAD_REF} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
     - name: Install rsync
       run: sudo apt-get install -y rsync
       shell: bash

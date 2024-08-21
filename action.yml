@@ -30,7 +30,7 @@ runs:
       if: startsWith(github.ref_name, 'feature/multidev/')
       shell: bash
       id: multidev-branch-name
-      run: echo "name=$(echo ${GITHUB_HEAD_REF} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
+      run: echo "name=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
 
     - name: Deploy to Remote Repository
       uses: padillaco/action-deploy-to-remote-repository@main

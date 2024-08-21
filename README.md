@@ -1,118 +1,77 @@
-# Deploy to Pantheon
+# Deploy to WP Engine (GitHub Action)
 
-Uses [action-deploy-to-remote-repository](https://github.com/padillaco/action-deploy-to-remote-repository) and Pantheon [terminus](https://docs.pantheon.io/terminus) to deploy files/folders from a local GitHub action repository to a Pantheon environment.
+This repository contains a GitHub action to setup code deployment from a GitHub repository to a WP Engine environment. The Shell script that runs the actual deployment can be found in [this repo](https://github.com/padillaco/action-deploy-to-remote-repository).
 
-_Notes_:
+## Implementation
 
-- This action depends upon the upstream action [action-deploy-to-remote-repository](https://github.com/padillaco/action-deploy-to-remote-repository) and it's associated requirements (eg. [ssh_key](https://github.com/padillaco/action-deploy-to-remote-repository#ssh_key).
-- The `develop` branch is deployed to the Pantheon `dev` environment (via a git commit to Pantheon's `master` branch), and all other branch names are deployed to a Pantheon multidev environment of the same name (unless overridden with [pantheon_env_name](#pantheon_env_name)).
+### 1. Copy the Workflow File Template
 
-## Usage
+Copy this [.github](/example/.github/) folder to the root of the repository that is being setup for auto-deployments. If the **.github/workflows** folder already exists within the repository, then copy only the [wpengine-deploy.yml](/example/.github/workflows/wpengine-deploy.yml) workflow file to the workflows folder.
 
-Example deploy to a remote repository:
+### 2. Actions
 
-```yml
-name: Deploy to Pantheon Live
+ The [wpengine-deploy.yml](/example/.github/workflows/wpengine-deploy.yml) workflow file includes 3 actions:
 
-on:
-  push:
-    branches:
-      - develop
+1. Setup Node: Downloads and caches Node.js and adds it to the PATH
+2. Install JS Dependencies and Build Theme Assets
+3. Deploy to WP Engine
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+_Note: Actions 1 and 2 are optional, and can be removed if the WordPress theme does not require assets to be built before a deployment._
 
-    # Build your project here
-    # ...
+These actions are triggered when pushing to a specific branch or when a pull request is closed and merged into a branch. Feel free to adjust the branch names for the **on push** or **on pull request** trigger located at the top of the workflow file.
 
-    - name: Deploy to Pantheon
-      uses: padillaco/action-deploy-to-pantheon@main
-      with:
-        pantheon_site: 'your-site-name'
-        pantheon_site_id: '12345678-YOUR-SITE-ID00-123456789123'
-        pantheon_machine_token: ${{ secrets.SSH_KEY }}
-        terminus_version: '3.3.0'
-        ssh_key: ${{ secrets.SSH_KEY }}
-        base_directory: '/'
-        destination_directory: '/'
-        exclude_list: '.git, .github, .gitmodules, node_modules'
+### 3. Variables and Configuration
 
-```
+1. The workflow file template contains the following placeholders that need to be replaced with their actual value:
+    - GitHub Repository Branches:
+        - [development-branch]
+        - [staging-branch]
+        - [production-branch]
+    - WP Engine Environments:
+        - [development-environment]
+        - [staging-environment]
+        - [production-environment]
+    - WordPress Theme Folder
+        - [theme-folder]
 
-## Inputs
+2. If deployments shouldn't occur for the development, staging, or production environment, you can remove references to the environment and related branch from the workflow file.
 
-> Specify using `with` keyword. See all upstream inputs for [action-deploy-to-remote-repository](https://github.com/padillaco/action-deploy-to-remote-repository).
+3. Configuring the **Deploy to WP Engine** Action
+    - Set the path to the code that will be deployed using the `base_directory` variable. The default value is `.`, or the root of the repository.
+    - Set the path to the destination directory on the WP Engine environment where the code will be deployed to using the `destination_directory` variable. The default value is `.`, or the WordPress install root of the WP Engine environment.
+    - If needed, modify the list of excluded files that should be deployed using the `exclude_list` variable. The default value is: `.git, .github, .gitmodules, node_modules, .ddev`
+    - You can delete the related variables for each environment that does not support deployments.
 
-### `base_directory`
+### 4. Generate an SSH Key Pair
 
-- Specify the base directory to sync from.
-- Accepts a string.
-- Defaults to the root of the repository (`.`). **NOTE** You likely want a
-  trailing slash if you're syncing a subdirectory. (eg. `wp-content/`)
-- Inherited from `action-deploy-to-remote-repository`.
+WP Engine requires that an SSH public key be added to environment to enable GitPush. See [WP Engine: Git Version Control System](https://wpengine.com/support/git/) for more details.
 
-### `destination_directory`
+1. Open the terminal and run:
+    ```bash
+    ssh-keygen -t ed25519 -C "wpengine-deploy" -f ~/.ssh/wpengine-deploy
+    ```
+    _Note 1: Do not set a passphrase when generating the public/private key pair._
 
-- Specify the destination directory to sync to.
-- Accepts a string.
-- Defaults to the root of the remote repository (`.`).
-- Inherited from `action-deploy-to-remote-repository`.
+    _Note 2: You can replace `~/.ssh/wpengine-deploy` with any temporary file name and path since the key pair will be deleted after use._
 
-### `exclude_list`
+2. Copy the private key by running:
+    ```bash
+    cat ~/.ssh/wpengine-deploy | pbcopy
+    ```
 
-- Specify a comma-separated list of files and directories to exclude from sync.
-- Accepts a string. (e.g. `.git, .gitmodules`)
-- Defaults to `.git, .gitmodules, .pantheon`.
-- Inherited from `action-deploy-to-remote-repository`.
+    Go to the **Settings → Secrets and variables → Actions** page of the repository and add a new repository secret named `WPENGINE_SSH_PRIVATE_KEY` then enter the contents of the private key as the value.
 
-### `ssh_key`
+3. Copy the public key by running:
+    ```bash
+    cat ~/.ssh/wpengine-deploy.pub | pbcopy
+    ```
 
-- SSH key to use for remote repository authentication.
-- Accepts a string (private key).
-- Required.
-- Inherited from `action-deploy-to-remote-repository`.
+    From the WP Engine dashboard, go to the GitPush section of the related environment to add the public key. Enter `[repository-slug]-github`as the name of the key, then enter the contents of the public key.
 
-### `pantheon_site`
+4. Remove the public and private key:
+    ```bash
+    rm ~/.ssh/wpengine-deploy ~/.ssh/wpengine-deploy.pub
+    ```
 
-- Specify the name of the Pantheon site to deploy to.
-- Accepts a string.
-- Required.
-
-### `pantheon_site_id`
-
-- Specify the ID of the Pantheon site to deploy to.
-- Accepts a string.
-- Required.
-
-### `pantheon_machine_token`
-
-- Specify the Pantheon machine token to use.
-- Accepts a string.
-- Required.
-
-### `terminus_version`
-
-- Specify the version of [terminus](https://docs.pantheon.io/terminus) to use.
-- Accepts a string.
-- Defaults to `'3.3.0'`.
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed
-recently.
-
-## Credits
-
-This project was created by [Alley Interactive](https://github.com/alleyinteractive).
-
-- [Ben Bolton](https://github.com/benpbolton)
-- [All Contributors](https://github.com/alleyinteractive/action-deploy-to-pantheon/graphs/contributors)
-
-## License
-
-The GNU General Public License (GPL) license. Please see [License File](LICENSE)
-for more information.
+---
+### Each push and merged pull request into the development, staging, or production branch should now trigger a deployment.

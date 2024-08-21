@@ -29,7 +29,7 @@ jobs:
           rm -rf node_modules/
 
       - name: Deploy to Pantheon
-        uses: padillaco/pantheon-deploy-action@main
+        uses: padillaco/pantheon-deploy-action@v2
         with:
           # Base directory for rsync
           base_directory: .

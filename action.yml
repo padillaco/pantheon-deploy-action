@@ -41,3 +41,4 @@ runs:
         remote_repo: 'ssh://codeserver.dev.${{ inputs.pantheon_site_id }}@codeserver.dev.${{ inputs.pantheon_site_id }}.drush.in:2222/~/repository.git'
         remote_branch: ${{ steps.multidev-branch-name.outputs.name || 'master' }}
         ssh_private_key: ${{ inputs.ssh_private_key }}
+        force_push: 'false'

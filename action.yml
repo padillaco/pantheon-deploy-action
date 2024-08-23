@@ -40,7 +40,9 @@ runs:
       run: echo '${{ toJson(github) }}'
 
     - name: Data 2
-      run: echo '${{ steps.multidev-branch-name.outputs.name }}'
+      env:
+        REF_NAME: ${{ steps.multidev-branch-name.outputs.name }}
+      run: echo '${REF_NAME}'
 
     # - name: Deploy to Remote Repository
     #   uses: padillaco/action-deploy-to-remote-repository@main

@@ -37,9 +37,11 @@ runs:
       run: echo "name=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
 
     - name: Data
+      shell: bash
       run: echo '${{ toJson(github) }}'
 
     - name: Data 2
+      shell: bash
       env:
         REF_NAME: ${{ steps.multidev-branch-name.outputs.name }}
       run: echo '${REF_NAME}'

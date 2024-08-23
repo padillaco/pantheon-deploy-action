@@ -31,7 +31,7 @@ runs:
   using: 'composite'
   steps:
     - name: Set Output Variables - Multidev Branch Name
-      if: startsWith(github.ref_name, 'feature/multidev/') || (startsWith(github.event.workflow_run.head_branch, 'feature/multidev/') && github.event.workflow.name == "Pantheon Create Multidev Environment")
+      if: startsWith(github.ref_name, 'feature/multidev/') || (startsWith(github.event.workflow_run.head_branch, 'feature/multidev/') && github.event.workflow.name == 'Pantheon Create Multidev Environment')
       shell: bash
       id: multidev-branch-name
       env:

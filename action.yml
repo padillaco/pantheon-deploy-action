@@ -36,13 +36,19 @@ runs:
       id: multidev-branch-name
       run: echo "name=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
 
-    - name: Deploy to Remote Repository
-      uses: padillaco/action-deploy-to-remote-repository@main
-      with:
-        base_directory: ${{ inputs.base_directory }}
-        destination_directory: ${{ inputs.destination_directory }}
-        exclude_list: ${{ inputs.exclude_list }}
-        remote_repo: 'ssh://codeserver.dev.${{ inputs.pantheon_site_id }}@codeserver.dev.${{ inputs.pantheon_site_id }}.drush.in:2222/~/repository.git'
-        remote_branch: ${{ steps.multidev-branch-name.outputs.name || 'master' }}
-        ssh_private_key: ${{ inputs.ssh_private_key }}
-        force_push: ${{ inputs.force_push }}
+    - name: Data
+      run: echo '${{ toJson(github) }}'
+
+    - name: Data 2
+      run: echo '${{ steps.multidev-branch-name.outputs.name }}'
+
+    # - name: Deploy to Remote Repository
+    #   uses: padillaco/action-deploy-to-remote-repository@main
+    #   with:
+    #     base_directory: ${{ inputs.base_directory }}
+    #     destination_directory: ${{ inputs.destination_directory }}
+    #     exclude_list: ${{ inputs.exclude_list }}
+    #     remote_repo: 'ssh://codeserver.dev.${{ inputs.pantheon_site_id }}@codeserver.dev.${{ inputs.pantheon_site_id }}.drush.in:2222/~/repository.git'
+    #     remote_branch: ${{ steps.multidev-branch-name.outputs.name || 'master' }}
+    #     ssh_private_key: ${{ inputs.ssh_private_key }}
+    #     force_push: ${{ inputs.force_push }}

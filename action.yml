@@ -31,10 +31,17 @@ runs:
   using: 'composite'
   steps:
     - name: Set Output Variables - Multidev Branch Name
-      if: startsWith(github.ref_name, 'feature/multidev/')
+      if: startsWith(github.ref_name, 'feature/multidev/') || (startsWith(github.event.workflow_run.head_branch, 'feature/multidev/') && github.event.workflow.name == "Pantheon Create Multidev Environment")
       shell: bash
       id: multidev-branch-name
-      run: echo "name=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
+      env:
+        HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+      run: |
+        if [[ $GITHUB_REF_NAME == feature/multidev/* ]]; then
+          echo "name=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
+        else
+          echo "name=$(echo ${HEAD_BRANCH} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
+        fi
 
     - name: Data
       shell: bash

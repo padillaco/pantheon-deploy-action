@@ -23,6 +23,10 @@ inputs:
   ssh_private_key:
     description: 'SSH private key to use for remote repository authentication'
     required: true
+  force_push:
+    description: 'Force push to the remote repository'
+    required: true
+    default: 'false'
 runs:
   using: 'composite'
   steps:
@@ -41,4 +45,4 @@ runs:
         remote_repo: 'ssh://codeserver.dev.${{ inputs.pantheon_site_id }}@codeserver.dev.${{ inputs.pantheon_site_id }}.drush.in:2222/~/repository.git'
         remote_branch: ${{ steps.multidev-branch-name.outputs.name || 'master' }}
         ssh_private_key: ${{ inputs.ssh_private_key }}
-        force_push: 'false'
+        force_push: ${{ inputs.force_push }}

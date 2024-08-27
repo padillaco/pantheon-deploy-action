@@ -1,0 +1,22 @@
+name: Pantheon Create Multidev Environment
+
+on:
+  create
+
+jobs:
+  create_multidev:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'feature/multidev/')
+    steps:
+      - name: Set Multidev Environment Name
+        shell: bash
+        id: multidev-env
+        run: echo "name=$(echo ${GITHUB_REF_NAME} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
+
+      - name: Pantheon Create Multidev Environment
+        uses: padillaco/pantheon-multidev-action@main
+        with:
+          pantheon_site_slug: [pantheon-site-slug]
+          pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+          multidev_env_name: ${{ steps.multidev-env.outputs.name }}
+          action: create

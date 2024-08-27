@@ -1,4 +1,4 @@
-# Deploy to WP Engine (GitHub Action)
+# Deploy to Pantheon (GitHub Action)
 
 This repository contains a GitHub action to setup code deployment from a GitHub repository to a WP Engine environment. The Shell script that runs the actual deployment can be found in [this repo](https://github.com/padillaco/action-deploy-to-remote-repository).
 

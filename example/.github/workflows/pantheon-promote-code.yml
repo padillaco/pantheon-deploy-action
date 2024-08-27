@@ -1,0 +1,22 @@
+name: Pantheon Promote Code
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+      - staging
+      - develop
+
+jobs:
+  promote_code:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged && ((startsWith(github.head_ref, 'feature/multidev/') && github.base_ref == 'develop') || (github.head_ref == 'develop' && github.base_ref == 'staging') || (github.head_ref == 'staging' && github.base_ref == 'main'))
+    steps:
+      - name: Pantheon Promote Code
+        uses: padillaco/pantheon-promote-code-action@main
+        with:
+          pantheon_site_slug: [pantheon-site-slug]
+          pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+          

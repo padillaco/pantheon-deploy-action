@@ -38,10 +38,6 @@ runs:
         else
           echo "name=$(echo ${HEAD_BRANCH} | cut -d '/' -f3)" >> $GITHUB_OUTPUT
         fi
-    
-    - name: Workflow Name
-      shell: bash
-      run: echo '${{ toJson(github) }}'
 
     - name: Deploy to Remote Repository
       uses: padillaco/action-deploy-to-remote-repository@main

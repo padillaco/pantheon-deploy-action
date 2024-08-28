@@ -1,0 +1,48 @@
+name: Build and Deploy to Pantheon
+description: Builds assets and deploys a repository to a Pantheon development or multidev environment.
+author: padillaco
+branding:
+  icon: cloud-lightning
+  color: yellow
+inputs:
+  ssh_private_key:
+    description: SSH private key to use for remote repository authentication
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4.1.7
+
+    - name: Setup Node
+      uses: actions/setup-node@v4.0.3
+      with:
+        node-version: 20
+        cache: npm
+        cache-dependency-path: wp-content/themes/[theme-name]
+    
+    - name: Install JS Dependencies and Build Theme Assets
+      shell: bash
+      run: |
+        cd wp-content/themes/[theme-name]
+        npm i -ci 
+        npm run build
+        rm -rf node_modules/
+
+    - name: Deploy to Pantheon
+      uses: padillaco/pantheon-deploy-action@v2
+      with:
+        # Base directory for rsync
+        base_directory: .
+
+        # Destination directory for rsync in remote repository
+        destination_directory: .
+
+        # Comma-separated list of files and directories to exclude from sync
+        exclude_list: .git, .github, .gitmodules, node_modules, .ddev
+
+        # The Pantheon site ID to deploy to. Format: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX
+        pantheon_site_id: [pantheon-site-id]
+
+        # SSH private key to use for remote repository authentication
+        ssh_private_key: ${{ inputs.ssh_private_key }}

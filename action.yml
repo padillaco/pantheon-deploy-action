@@ -50,4 +50,4 @@ runs:
         ssh_private_key: ${{ inputs.ssh_private_key }}
         # Only force push to newly created multidev environment just incase it is not
         # up to date with the dev branch
-        force_push: ${{ github.workflow == 'Pantheon - Create Multidev Environment' && 'true' || 'false' }}
+        force_push: ${{ steps.multidev-branch-name.outputs.name && 'true' || 'false' }}

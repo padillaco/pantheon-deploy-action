@@ -1,10 +1,11 @@
-name: Pantheon Create Multidev Environment
+name: Pantheon - Create Multidev Environment
 
 on:
   create
 
 jobs:
   create_multidev:
+    name: Pantheon - Create Multidev Environment
     runs-on: ubuntu-latest
     if: startsWith(github.ref_name, 'feature/multidev/')
     steps:
@@ -20,3 +21,9 @@ jobs:
           pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
           multidev_env_name: ${{ steps.multidev-env.outputs.name }}
           action: create
+
+      - name: Build and Deploy
+        uses: ./.github/actions/build-and-deploy
+        with:
+          # SSH private key to use for remote repository authentication
+          ssh_private_key: ${{ secrets.PANTHEON_SSH_PRIVATE_KEY }}

@@ -1,10 +1,11 @@
-name: Pantheon Delete Multidev Environment
+name: Pantheon - Delete Multidev Environment
 
 on:
   delete
 
 jobs:
   delete_multidev:
+    name: Pantheon - Delete Multidev Environment
     runs-on: ubuntu-latest
     if: startsWith(github.event.ref, 'feature/multidev/')
     steps:

@@ -1,4 +1,4 @@
-name: Pantheon Promote Code
+name: Pantheon - Promote Code
 
 on:
   pull_request:
@@ -11,6 +11,7 @@ on:
 
 jobs:
   promote_code:
+    name: Pantheon - Promote Code
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged && ((startsWith(github.head_ref, 'feature/multidev/') && github.base_ref == 'develop') || (github.head_ref == 'develop' && github.base_ref == 'staging') || (github.head_ref == 'staging' && github.base_ref == 'main'))
     steps:

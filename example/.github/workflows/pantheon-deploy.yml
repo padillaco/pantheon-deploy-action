@@ -13,10 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref_name == 'develop' || (startsWith(github.ref_name, 'feature/multidev/') && github.event.created != true)
     steps:
-      - name: Debug
-        shell: bash
-        run: echo '${toJson(github)}'
-        
       - name: Build and Deploy
         uses: ./.github/actions/build-and-deploy
         with:

@@ -11,7 +11,7 @@ jobs:
   build_and_deploy:
     name: Build and Deploy to Pantheon
     runs-on: ubuntu-latest
-    if: github.ref_name == 'develop' || (startsWith(github.ref_name, 'feature/multidev/') && github.event.created != true)
+    if: github.ref_name == 'develop' && !(startsWith(github.event.head_commit.message, 'Merge pull request') && contains(github.event.head_commit.message, '/feature/multidev/')) || (startsWith(github.ref_name, 'feature/multidev/') && github.event.created != true)
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4.1.7
